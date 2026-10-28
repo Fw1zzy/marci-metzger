@@ -109,6 +109,12 @@ function Icon({ name = "arrow", size = 20, ...props }) {
       </>
     ),
     check: <path d="m4 12 5 5L20 6" />,
+    pause: (
+      <>
+        <path d="M8 5v14M16 5v14" strokeWidth="2.4" />
+      </>
+    ),
+    play: <path d="m8 4 12 8-12 8Z" />,
   };
   return (
     <svg
@@ -189,7 +195,105 @@ export default function App() {
   const [enquiry, setEnquiry] = useState(null);
   const [copyStatus, setCopyStatus] = useState("");
   const [priceError, setPriceError] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(true);
+  const [heroInView, setHeroInView] = useState(true);
+  const [pageVisible, setPageVisible] = useState(true);
+  const heroRef = useRef(null);
   const formRef = useRef(null);
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      setScrolled(window.scrollY > 80);
+      setShowBackToTop(window.scrollY > 650);
+      frame = 0;
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+  useEffect(() => {
+    const visibility = () => setPageVisible(!document.hidden);
+    visibility();
+    document.addEventListener("visibilitychange", visibility);
+    const observer = new IntersectionObserver(
+      ([entry]) => setHeroInView(entry.isIntersecting),
+      { threshold: 0.15 },
+    );
+    observer.observe(heroRef.current);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", visibility);
+    };
+  }, []);
+  useEffect(() => {
+    const motionPreference = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const targets = [
+      ...document.querySelectorAll(
+        ".section-heading, .section-label, .about-grid, .results-grid article, .search-form, .gallery-item, .services-grid, .contact-grid, .partners-grid",
+      ),
+    ];
+    let observer;
+    const configureMotion = () => {
+      observer?.disconnect();
+      targets.forEach((el) =>
+        el.classList.remove("reveal-pending", "is-revealed"),
+      );
+      if (motionPreference.matches) {
+        setAutoPlay(false);
+        return;
+      }
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-revealed");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.06, rootMargin: "0px 0px -24px 0px" },
+      );
+      targets.forEach((el, i) => {
+        if (el.getBoundingClientRect().top >= window.innerHeight) {
+          el.classList.add("reveal-pending");
+          el.style.setProperty("--reveal-delay", `${(i % 3) * 65}ms`);
+          observer.observe(el);
+        }
+      });
+    };
+    const revealFocused = (event) =>
+      event.target.closest(".reveal-pending")?.classList.add("is-revealed");
+    configureMotion();
+    motionPreference.addEventListener("change", configureMotion);
+    document.addEventListener("focusin", revealFocused);
+    return () => {
+      observer?.disconnect();
+      motionPreference.removeEventListener("change", configureMotion);
+      document.removeEventListener("focusin", revealFocused);
+      targets.forEach((el) =>
+        el.classList.remove("reveal-pending", "is-revealed"),
+      );
+    };
+  }, []);
+  const slideshowRunning = autoPlay && heroInView && pageVisible && !menuOpen;
+  useEffect(() => {
+    if (!slideshowRunning) return;
+    const timer = window.setInterval(
+      () => setSlide((current) => (current + 1) % slides.length),
+      7000,
+    );
+    return () => window.clearInterval(timer);
+  }, [slideshowRunning]);
   useEffect(() => {
     const close = (e) => {
       if (e.key === "Escape") setMenuOpen(false);
@@ -197,8 +301,19 @@ export default function App() {
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, []);
-  const goSlide = (change) =>
+  const goSlide = (change) => {
+    setAutoPlay(false);
     setSlide((current) => (current + change + slides.length) % slides.length);
+  };
+  const scrollToTop = () => {
+    document.querySelector(".wordmark")?.focus({ preventScroll: true });
+    window.scrollTo({
+      top: 0,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
+  };
   const changePhoto = (change) =>
     setLightbox(
       (current) => (current + change + gallery.length) % gallery.length,
@@ -247,7 +362,60 @@ export default function App() {
         Skip to content
       </a>
       <div className="site-shell">
-        <header className="hero" id="top">
+        <div
+          className={`navigation ${scrolled ? "is-scrolled" : ""} ${menuOpen ? "menu-is-open" : ""}`}
+        >
+          <a className="wordmark" href="#top" aria-label="Marci Metzger home">
+            MM
+            <span>
+              MARCI METZGER<small>THE RIDGE REALTY GROUP</small>
+            </span>
+          </a>
+          <button
+            className="menu-button glass"
+            aria-expanded={menuOpen}
+            aria-controls="primary-navigation"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <span>{menuOpen ? "Close" : "Menu"}</span>
+            <Icon name={menuOpen ? "close" : "menu"} />
+          </button>
+          <nav
+            id="primary-navigation"
+            className={`nav-links glass ${menuOpen ? "is-open" : ""}`}
+            aria-label="Main navigation"
+          >
+            <a href="#search" onClick={() => setMenuOpen(false)}>
+              Find a home
+            </a>
+            <a href="#about" onClick={() => setMenuOpen(false)}>
+              Meet Marci
+            </a>
+            <a href="#services" onClick={() => setMenuOpen(false)}>
+              Our expertise
+            </a>
+            <a href="#partners" onClick={() => setMenuOpen(false)}>
+              Our partners
+            </a>
+            <a
+              className="mobile-contact-link"
+              href="#contact"
+              onClick={() => setMenuOpen(false)}
+            >
+              Let’s talk <Icon name="northeast" size={16} />
+            </a>
+          </nav>
+          <a className="nav-contact glass" href="#contact">
+            Let’s talk <Icon name="northeast" size={16} />
+          </a>
+        </div>
+        <header
+          className="hero"
+          id="top"
+          ref={heroRef}
+          aria-roledescription="carousel"
+          aria-label="Pahrump real estate highlights"
+        >
           {slides.map((item, i) => (
             <Picture
               key={item.image}
@@ -261,41 +429,6 @@ export default function App() {
             />
           ))}
           <div className="hero-shade" />
-          <div className="navigation">
-            <a className="wordmark" href="#top" aria-label="Marci Metzger home">
-              MM
-              <span>
-                MARCI METZGER<small>THE RIDGE REALTY GROUP</small>
-              </span>
-            </a>
-            <button
-              className="menu-button glass"
-              aria-expanded={menuOpen}
-              aria-controls="primary-navigation"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-              <span>{menuOpen ? "Close" : "Menu"}</span>
-              <Icon name={menuOpen ? "close" : "menu"} />
-            </button>
-            <nav
-              id="primary-navigation"
-              className={`nav-links glass ${menuOpen ? "is-open" : ""}`}
-              aria-label="Main navigation"
-            >
-              <a href="#search" onClick={() => setMenuOpen(false)}>
-                Find a home
-              </a>
-              <a href="#about" onClick={() => setMenuOpen(false)}>
-                Meet Marci
-              </a>
-              <a href="#services" onClick={() => setMenuOpen(false)}>
-                Our expertise
-              </a>
-            </nav>
-            <a className="nav-contact glass" href="#contact">
-              Let’s talk <Icon name="northeast" size={16} />
-            </a>
-          </div>
           <div className="hero-heading">
             <p className="eyebrow light">
               ROOTED HERE. READY FOR YOUR NEXT CHAPTER.
@@ -325,16 +458,34 @@ export default function App() {
               <Icon name="arrow" size={25} />
             </a>
           </div>
-          <div className="hero-pagination" aria-label="Hero image controls">
+          <div
+            className={`hero-pagination ${slideshowRunning ? "is-playing" : ""}`}
+            aria-label="Hero image controls"
+          >
             {slides.map((item, i) => (
               <button
                 key={item.image}
-                className={slide === i ? "selected" : ""}
+                className={`slide-dot ${slide === i ? "selected" : ""}`}
                 aria-label={`Show image ${i + 1}: ${item.label}`}
                 aria-pressed={slide === i}
-                onClick={() => setSlide(i)}
+                onClick={() => {
+                  setAutoPlay(false);
+                  setSlide(i);
+                }}
               />
             ))}
+            <button
+              className="slideshow-toggle"
+              onClick={() => setAutoPlay(!autoPlay)}
+              aria-label={
+                autoPlay
+                  ? "Pause background slideshow"
+                  : "Play background slideshow"
+              }
+              aria-pressed={!autoPlay}
+            >
+              <Icon name={autoPlay ? "pause" : "play"} size={15} />
+            </button>
           </div>
         </header>
 
@@ -789,12 +940,61 @@ export default function App() {
           </section>
 
           <section
+            className="partners section-pad"
+            id="partners"
+            aria-labelledby="partners-title"
+          >
+            <div className="section-label">
+              <span className="eyebrow">06 / CONNECTIONS THAT MATTER</span>
+              <span className="tiny-label">LOCAL ROOTS. SHARED VALUES.</span>
+            </div>
+            <div className="section-heading">
+              <h2 id="partners-title">OUR PARTNERS.</h2>
+              <p>
+                Our brokerage, professional affiliations,
+                <br className="desktop-break" /> and commitment to equal
+                housing.
+              </p>
+            </div>
+            <div className="partners-grid">
+              {[
+                ["ridge.png", "The Ridge Realty Group", "OUR BROKERAGE"],
+                ["realtor.jpg", "REALTOR®", "PROFESSIONAL AFFILIATION"],
+                [
+                  "chamber.jpg",
+                  "Pahrump Valley Chamber of Commerce",
+                  "OUR LOCAL COMMUNITY",
+                ],
+                [
+                  "equal-housing.png",
+                  "Equal Housing Opportunity",
+                  "A SHARED COMMITMENT",
+                ],
+              ].map(([image, name, label]) => (
+                <div className="partner" key={image}>
+                  <div className="partner-logo">
+                    <img
+                      src={`/images/${image}`}
+                      alt={name}
+                      width="140"
+                      height="140"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span className="eyebrow">{label}</span>
+                  <h3>{name}</h3>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section
             className="contact section-pad"
             id="contact"
             aria-labelledby="contact-title"
           >
             <div className="section-label">
-              <span className="eyebrow light">06 / LET’S CONNECT</span>
+              <span className="eyebrow light">07 / LET’S CONNECT</span>
               <span className="tiny-label">
                 A GOOD MOVE STARTS WITH A CONVERSATION.
               </span>
@@ -951,39 +1151,23 @@ export default function App() {
               <br />
               The Ridge Realty Group · Pahrump, Nevada
             </span>
-            <div className="affiliations">
-              <img
-                src="/images/ridge.png"
-                width="50"
-                height="50"
-                alt="The Ridge Realty Group"
-                loading="lazy"
-              />
-              <img
-                src="/images/equal-housing.png"
-                width="45"
-                height="45"
-                alt="Equal Housing Opportunity"
-                loading="lazy"
-              />
-              <img
-                src="/images/realtor.jpg"
-                width="45"
-                height="45"
-                alt="Realtor"
-                loading="lazy"
-              />
-              <img
-                src="/images/chamber.jpg"
-                width="50"
-                height="50"
-                alt="Pahrump Valley Chamber of Commerce"
-                loading="lazy"
-              />
-            </div>
+            <span className="footer-signoff">
+              LOCAL KNOWLEDGE. PERSONAL SERVICE.
+            </span>
           </div>
         </footer>
       </div>
+
+      {showBackToTop && (
+        <button
+          className="back-to-top-button"
+          onClick={scrollToTop}
+          aria-label="Scroll back to top"
+        >
+          <Icon name="arrow" className="up" size={22} />
+          <span>Back to top</span>
+        </button>
+      )}
 
       <Modal
         open={lightbox !== null}

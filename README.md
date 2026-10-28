@@ -26,6 +26,7 @@ If the hosting domain changes, update the canonical URL, Open Graph URLs, JSON-L
 
 - `src/App.jsx`: page content, accessible dialogs, mobile navigation, gallery, search preferences, and enquiry preparation.
 - `src/styles.css`: layout, typography, responsive breakpoints, focus styles, and reduced-motion support.
+- `src/enhancements.css`: wide-screen scaling, persistent navigation, partners section, and animation styling.
 - `src/main.jsx`: development render and production hydration.
 - `src/entry-server.jsx` and `scripts/prerender.mjs`: static HTML generation.
 - `public/images`: original-site images plus compressed WebP copies.
@@ -35,7 +36,11 @@ If the hosting domain changes, update the canonical URL, Open Graph URLs, JSON-L
 ## Functionality and scope
 
 - Mobile menu opens, closes on navigation, and dismisses with Escape.
-- Hero controls switch between three original-site photos; there is no automatic motion.
+- The hero cycles through three original-site photos every seven seconds with a slow zoom and crossfade. A pause/play control is provided. Manual slide selection pauses automatic playback. Playback also suspends while the hero is off screen, the tab is hidden, or the mobile menu is open. Reduced-motion preferences disable autoplay initially and remove transitions.
+- The navigation stays fixed while scrolling and changes to an opaque, readable surface. In-page links account for the header height. A floating back-to-top control appears after scrolling 650px and returns keyboard focus to the brand link.
+- Sections reveal gently as they enter view. Content remains visible in the pre-rendered HTML without JavaScript, and reduced-motion users see content without animation.
+- The original brand marks appear in a dedicated Our Partners section, with brokerage, professional affiliation, community, and equal-housing labels.
+- The page uses a centered layout up to 1920px wide on larger screens, with body copy generally at 16px and 18px at larger desktop widths.
 - All seven original gallery photos open in a native modal dialog. Previous/next, arrow keys, Escape, backdrop dismissal, and focus restoration are supported.
 - Search validates price ranges and prepares a criteria summary. It links to the existing official listings page; it does not claim to filter a live MLS feed. Criteria can also be shared through the visitor's text app.
 - Contact fields validate locally and prepare a message for copying to the official contact form or opening in the visitor's text app. No message is automatically sent, stored, or claimed as delivered. A direct send requires an authorized form endpoint or backend.
