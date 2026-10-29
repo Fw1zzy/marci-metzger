@@ -37,9 +37,15 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--paper);
+  background: transparent;
   width: 100%;
   overflow-x: hidden;
+}
+#root {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
 }
 button,
 input,
@@ -105,6 +111,8 @@ textarea:focus-visible {
 }
 .site-shell {
   width: 100%;
+  min-width: 0;
+  margin: 0;
   background: var(--paper);
 }
 .sr-only {
@@ -150,7 +158,7 @@ textarea:focus-visible {
   gap: 6px;
 }
 .section-pad {
-  padding: 64px 6% 80px;
+  padding: 64px clamp(40px, 6vw, 80px) 80px;
 }
 .section-label {
   display: flex;

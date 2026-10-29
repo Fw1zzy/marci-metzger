@@ -37,9 +37,12 @@ function CountUp({ value, decimals = 0 }) {
       motion.removeEventListener("change", onMotionChange);
     };
   }, [value]);
-  return <span ref={element} className="count-up" aria-label={value.toFixed(decimals)}>
-    <span aria-hidden="true">{display.toFixed(decimals)}</span>
-  </span>;
+  return <>
+    <span ref={element} className="count-up" aria-hidden="true">
+      <span>{display.toFixed(decimals)}</span>
+    </span>
+    <span className="sr-only">{value.toFixed(decimals)}</span>
+  </>;
 }
 const originalContact =
   "https://marcimetzger.com/#63878283-d93b-46db-8daa-d8cb1389f2ab";
