@@ -606,7 +606,7 @@ export default function App() {
             aria-labelledby="about-title"
           >
             <div className="section-label">
-              <span className="eyebrow">01 / MEET YOUR REALTOR</span>
+              <span className="eyebrow">MEET YOUR REALTOR</span>
               <span className="tiny-label">
                 LOCAL KNOWLEDGE. LASTING CONNECTIONS.
               </span>
@@ -660,7 +660,7 @@ export default function App() {
             aria-labelledby="results-title"
           >
             <div className="section-label">
-              <span className="eyebrow light">02 / A PROVEN APPROACH</span>
+              <span className="eyebrow light">A PROVEN APPROACH</span>
               <span className="tiny-label">
                 THOUGHTFUL STRATEGY. PERSONAL SERVICE.
               </span>
@@ -751,7 +751,7 @@ export default function App() {
             aria-labelledby="search-title"
           >
             <div className="section-label">
-              <span className="eyebrow">03 / YOUR NEXT CHAPTER</span>
+              <span className="eyebrow">YOUR NEXT CHAPTER</span>
               <span className="tiny-label">
                 <Icon name="pin" size={14} /> PAHRUMP & BEYOND
               </span>
@@ -873,7 +873,7 @@ export default function App() {
             aria-labelledby="gallery-title"
           >
             <div className="section-label">
-              <span className="eyebrow">04 / A SENSE OF PLACE</span>
+              <span className="eyebrow">A SENSE OF PLACE</span>
               <span className="tiny-label">THE PAHRUMP PHOTO GALLERY</span>
             </div>
             <div className="section-heading">
@@ -916,7 +916,7 @@ export default function App() {
             aria-labelledby="services-title"
           >
             <div className="section-label">
-              <span className="eyebrow">05 / OUR SERVICES</span>
+              <span className="eyebrow">OUR SERVICES</span>
               <span className="tiny-label">
                 GOOD GUIDANCE MAKES ALL THE DIFFERENCE.
               </span>
@@ -977,7 +977,7 @@ export default function App() {
             aria-labelledby="partners-title"
           >
             <div className="section-label">
-              <span className="eyebrow">06 / CONNECTIONS THAT MATTER</span>
+              <span className="eyebrow">CONNECTIONS THAT MATTER</span>
               <span className="tiny-label">LOCAL ROOTS. SHARED VALUES.</span>
             </div>
             <div className="section-heading">
@@ -1026,7 +1026,7 @@ export default function App() {
             aria-labelledby="contact-title"
           >
             <div className="section-label">
-              <span className="eyebrow light">07 / LET’S CONNECT</span>
+              <span className="eyebrow light">LET’S CONNECT</span>
               <span className="tiny-label">
                 A GOOD MOVE STARTS WITH A CONVERSATION.
               </span>
