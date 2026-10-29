@@ -970,5 +970,46 @@
   }
 }
 
-.facts strong .count-up, .facts strong .count-up span { font: inherit; letter-spacing: inherit; font-variant-numeric: tabular-nums; }
+.facts strong .count-up, .facts strong .count-up span {
+  display: inline;
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .facts > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+  }
+  .facts > div:first-child { padding-top: 0; }
+  .facts > div:last-child { padding-bottom: 0; }
+  .facts > div + div { border-top: 1px solid #d8d9cf; }
+  .facts > div > span {
+    font-size: 13px;
+    min-height: 0;
+    line-height: 1.5;
+  }
+  .facts strong {
+    font-size: clamp(26px, 6.7vw, 34px);
+    line-height: 1.2;
+    margin: 0;
+    white-space: nowrap;
+    text-align: right;
+  }
+  .facts strong > span:not(.count-up) {
+    display: inline;
+    margin: 0;
+    font-size: 0.55em;
+  }
+  .facts-panel { min-height: 0; }
+}
 
