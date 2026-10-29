@@ -1,6 +1,46 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const phone = "+12069196886";
+function CountUp({ value, decimals = 0 }) {
+  const element = useRef(null);
+  const [display, setDisplay] = useState(value);
+  useEffect(() => {
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (motion.matches || !window.IntersectionObserver) return;
+    let frame;
+    let started = false;
+    const finish = () => {
+      cancelAnimationFrame(frame);
+      setDisplay(value);
+    };
+    setDisplay(0);
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || started) return;
+      started = true;
+      observer.disconnect();
+      const start = performance.now();
+      const tick = (now) => {
+        const progress = Math.min((now - start) / 1800, 1);
+        setDisplay(value * (1 - Math.pow(1 - progress, 3)));
+        if (progress < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    }, { threshold: 0.6 });
+    observer.observe(element.current);
+    const onMotionChange = () => {
+      if (motion.matches) { observer.disconnect(); finish(); }
+    };
+    motion.addEventListener("change", onMotionChange);
+    return () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      motion.removeEventListener("change", onMotionChange);
+    };
+  }, [value]);
+  return <span ref={element} className="count-up" aria-label={value.toFixed(decimals)}>
+    <span aria-hidden="true">{display.toFixed(decimals)}</span>
+  </span>;
+}
 const originalContact =
   "https://marcimetzger.com/#63878283-d93b-46db-8daa-d8cb1389f2ab";
 const gallery = [
@@ -474,18 +514,7 @@ export default function App() {
                 }}
               />
             ))}
-            <button
-              className="slideshow-toggle"
-              onClick={() => setAutoPlay(!autoPlay)}
-              aria-label={
-                autoPlay
-                  ? "Pause background slideshow"
-                  : "Play background slideshow"
-              }
-              aria-pressed={!autoPlay}
-            >
-              <Icon name={autoPlay ? "pause" : "play"} size={15} />
-            </button>
+
           </div>
         </header>
 
@@ -522,20 +551,20 @@ export default function App() {
                     <Icon name="key" size={17} /> Experience
                   </span>
                   <strong>
-                    NEARLY 30<span> YEARS</span>
+                    NEARLY <CountUp value={30} /><span> YEARS</span>
                   </strong>
                 </div>
                 <div>
                   <span>
                     <Icon name="home" size={17} /> Clients helped in 2021
                   </span>
-                  <strong>NEARLY 90</strong>
+                  <strong>NEARLY <CountUp value={90} /></strong>
                 </div>
                 <div>
                   <span>
                     <Icon name="sun" size={17} /> Sales in 2021
                   </span>
-                  <strong>$28.5M</strong>
+                  <strong>$<CountUp value={28.5} decimals={1} />M</strong>
                 </div>
               </div>
               <div className="facts-bottom">
@@ -1141,9 +1170,7 @@ export default function App() {
                 Yelp <Icon name="northeast" size={13} />
               </a>
             </div>
-            <a className="back-top" href="#top">
-              Back to top <Icon name="arrow" className="up" size={16} />
-            </a>
+
           </div>
           <div className="footer-bottom">
             <span>

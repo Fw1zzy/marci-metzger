@@ -19,7 +19,6 @@
 :root {
   font-family: Manrope, Arial, sans-serif;
   color: #262c27;
-  background: #d9dbd5;
   font-synthesis: none;
   --paper: #efeee8;
   --ink: #262c27;
@@ -34,8 +33,13 @@
 * {
   box-sizing: border-box;
 }
+html,
 body {
   margin: 0;
+  padding: 0;
+  background: var(--paper);
+  width: 100%;
+  overflow-x: hidden;
 }
 button,
 input,
@@ -100,10 +104,8 @@ textarea:focus-visible {
   color: #182018;
 }
 .site-shell {
-  max-width: 1600px;
-  margin: 28px auto;
+  width: 100%;
   background: var(--paper);
-  width: calc(100% - 56px);
 }
 .sr-only {
   position: absolute;
@@ -1161,17 +1163,14 @@ select {
     height: 780px;
   }
   .hero h1 {
-    font-size: 350px;
+    font-size: 300px;
   }
   .hero-heading {
     top: 145px;
   }
 }
 @media (max-width: 1100px) {
-  .site-shell {
-    width: calc(100% - 36px);
-    margin: 18px auto;
-  }
+
   .hero {
     min-height: 560px;
     height: 650px;
@@ -1499,10 +1498,7 @@ select {
   :root {
     scroll-padding-top: 12px;
   }
-  .site-shell {
-    width: calc(100% - 20px);
-    margin: 10px auto;
-  }
+
   .hero {
     height: 660px;
     max-height: 850px;

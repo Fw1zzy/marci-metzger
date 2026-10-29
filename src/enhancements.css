@@ -2,9 +2,7 @@
 :root {
   scroll-padding-top: 112px;
 }
-.site-shell {
-  max-width: 1920px;
-}
+
 .navigation {
   position: fixed;
   top: 28px;
@@ -25,7 +23,7 @@
   top: 0;
   width: 100%;
   max-width: none;
-  padding: 15px max(4%, calc((100% - 1740px) / 2));
+  padding: 15px 5%;
   background: #efeee8f5;
   color: var(--ink);
   backdrop-filter: blur(20px);
@@ -85,7 +83,7 @@
   top: 155px;
 }
 .hero h1 {
-  font-size: clamp(120px, 22.3vw, 430px);
+  font-size: clamp(120px, 18vw, 320px);
 }
 .hero-image {
   transform: scale(1.045);
@@ -971,3 +969,6 @@
     transition: none !important;
   }
 }
+
+.facts strong .count-up, .facts strong .count-up span { font: inherit; letter-spacing: inherit; font-variant-numeric: tabular-nums; }
+
