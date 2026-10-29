@@ -58,3 +58,9 @@ Pre-rendered HTML, one descriptive H1, structured H2/H3 headings, title and desc
 Built with React, Vite, and custom CSS. I reorganized the homepage around an architectural photo hero and a compact experience panel, bringing the location, agent identity, and key results into a clearer hierarchy. The layout adapts to desktop, tablet, and mobile while retaining the original content and imagery. Images are compressed to WebP, and the production homepage is pre-rendered to HTML for faster access to content and better crawlability.
 
 Review and personalize the implementation note before using it. Be prepared to explain the code and your own design choices.
+
+### SEO deployment checklist
+
+Every production build runs `scripts/check-seo.mjs` to check pre-rendered content, one H1, metadata, valid JSON-LD, matching canonical/sitemap/robots URLs, image alternatives, and local asset availability. These checks are not a ranking guarantee or Google's rich-result validation.
+
+The Sites preview currently requires login. Search engines cannot crawl the actual page while that access restriction remains. Public launch requires the owner's decision to change access. On the final domain, update absolute URLs in index.html, public/sitemap.xml and public/robots.txt together, rebuild, and ensure HTTPS and a single preferred hostname. Verify the public URL in Google Search Console, submit /sitemap.xml, and inspect the page with Google's Rich Results Test. Validate real device performance after public launch. Do not add fabricated ratings, listings or keyword stuffing.
