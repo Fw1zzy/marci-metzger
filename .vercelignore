@@ -1,0 +1,9 @@
+node_modules
+dist
+.git
+.sites-local
+.openai
+qa
+*.log
+.env*
+asset-contact-sheet.jpg
